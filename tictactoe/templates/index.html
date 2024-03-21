@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="tictactoe/style.css">
+    <title>Tic Tac Toe</title>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <table id="board">
+        <tbody>
+            {% for row in board %}
+                <tr>
+                    {% for cell in row %}
+                        <td id="cell-{{ loop.index0 }}-{{ loop.parentloop.index }}" class="{{ cell }}"></td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div id="current-player">Current player: {{ current_player }}</div>
+    <button id="new-game">New Game</button>
+    <script>
+        let board = [
+            {% for row in board %}
+                [
+                    {% for cell in row %}
+                        "{{ cell }}",
+                    {% endfor %}
+                ],
+            {% endfor %}
+        ];
+    
+        let currentPlayer = "{{ current_player }}";
+    
+        function updateBoard() {
+            $("#board td").each(function (index) {
+                let row = Math.floor(index / 3);
+                let col = index % 3;
+                $(this).text(board[row][col]);
+                $(this).removeClass("x o");
+                $(this).addClass(board[row][col]);
+            });
+            $("#current-player").text("Current player: " + currentPlayer);
+        }
+    
+        $(document).ready(function () {
+            updateBoard();
+    
+            $("#board td").click(function () {
+                let row = Math.floor(this.cellIndex / 3);
+                let col = this.cellIndex % 3;
+    
+                if (board[row][col] === " ") {
+                    board[row][col] = currentPlayer;
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    
+                    $.post("/move", {
+                        row: row,
+                        col: col
+                    }, function (data) {
+                        board = data.board;
+                        currentPlayer = data.current_player;
+                        updateBoard();
+                    });
+                }
+            });
+    
+            $("#new-game").click(function () {
+                $.post("/start", function (data) {
+                    board = data.board;
+                    currentPlayer = data.current_player;
+                    updateBoard();
+                });
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>

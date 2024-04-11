@@ -16,8 +16,8 @@ class Move(NamedTuple):
 
 BOARD_SIZE = 3
 DEFAULT_PLAYERS = (
-    Player(label="X", color="blue"),
-    Player(label="O", color="green"),
+    Player(label="X", color="pink"),
+    Player(label="O", color="purple"),
 )
 
 class TicTacToeGame:
@@ -134,7 +134,7 @@ class TicTacToeBoard(tk.Tk):
                     fg="black",
                     width=3,
                     height=2,
-                    highlightbackground="lightblue",
+                    highlightbackground="lightpink",
                 )
                 self._cells[button] = (row, col)
                 button.bind("<ButtonPress-1>", self.play)
@@ -178,7 +178,7 @@ class TicTacToeBoard(tk.Tk):
         self._game.reset_game()
         self._update_display(msg="Ready?")
         for button in self._cells.keys():
-            button.config(highlightbackground="lightblue")
+            button.config(highlightbackground="lightpink")
             button.config(text="")
             button.config(fg="black")
 

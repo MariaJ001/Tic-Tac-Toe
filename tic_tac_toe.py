@@ -1,9 +1,8 @@
-"""A tic-tac-toe game built with Python and Tkinter."""
-
 import tkinter as tk
 from itertools import cycle
-from tkinter import font
+from tkinter import font, simpledialog
 from typing import NamedTuple
+
 
 class Player(NamedTuple):
     label: str
@@ -91,6 +90,27 @@ class TicTacToeGame:
         self._has_winner = False
         self.winner_combo = []
 
+class PlayerColorDialog(tk.Toplevel):
+    def __init__(self, parent, player_label):
+        super().__init__(parent)
+        self.parent = parent
+        self.player_label = player_label
+        self.title(f"Choose {self.player_label} color")
+        self.color = None
+        self._create_widgets()
+
+    def _create_widgets(self):
+        label = tk.Label(self, text=f"Choose color for {self.player_label}:")
+        label.pack()
+        self.color_entry = tk.Entry(self)
+        self.color_entry.pack()
+        ok_button = tk.Button(self, text="OK", command=self._ok)
+        ok_button.pack()
+
+    def _ok(self):
+        self.color = self.color_entry.get()
+        self.destroy()
+
 class TicTacToeBoard(tk.Tk):
     def __init__(self, game):
         super().__init__()
@@ -100,15 +120,56 @@ class TicTacToeBoard(tk.Tk):
         self._create_menu()
         self._create_board_display()
         self._create_board_grid()
+        self._choose_player_colors()  # Prompt players to choose colors
+
+    def _choose_player_colors(self):
+        # Prompt player 1 to choose color
+        player1_color_dialog = PlayerColorDialog(self, "Player X")
+        self.wait_window(player1_color_dialog)
+        player1_color = player1_color_dialog.color
+
+        # Prompt player 2 to choose color
+        player2_color_dialog = PlayerColorDialog(self, "Player O")
+        self.wait_window(player2_color_dialog)
+        player2_color = player2_color_dialog.color
+
+        # Create a list of players with chosen colors
+        players_with_colors = [
+            Player(label="X", color=player1_color),
+            Player(label="O", color=player2_color)
+        ]
+
+        # Initialize _players with a new cycle object with the list of players
+        self._game._players = cycle(players_with_colors)
+
+    def _initialize_players(self):
+        players_with_colors = [
+            Player(label="X", color=self._player_colors[0]),
+            Player(label="O", color=self._player_colors[1])
+        ]
+        self._game._players = cycle(players_with_colors)
 
     def _create_menu(self):
         menu_bar = tk.Menu(master=self)
         self.config(menu=menu_bar)
         file_menu = tk.Menu(master=menu_bar)
-        file_menu.add_command(label="Play Again", command=self.reset_board)
+        file_menu.add_command(label="Play Again", command=self._play_again)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
+
+    def _play_again(self):
+        # Ask players if they want to keep their chosen colors
+        confirm = simpledialog.askstring("Play Again", "Do you want to keep your chosen colors? (yes/no)")
+        if confirm.lower() == 'yes':
+            # Keep the same colors
+            self._initialize_players()
+        else:
+            # Prompt players to choose colors again
+            self._choose_player_colors()
+
+        # Reset the board
+        self.reset_board()
 
     def _create_board_display(self):
         display_frame = tk.Frame(master=self)
@@ -161,8 +222,14 @@ class TicTacToeBoard(tk.Tk):
                 self._update_display(msg)
 
     def _update_button(self, clicked_btn):
-        clicked_btn.config(text=self._game.current_player.label)
-        clicked_btn.config(fg=self._game.current_player.color)
+        label = self._game.current_player.label
+        color = self._game.current_player.color
+    
+        # Set the button text and color if they are not None
+        if label:
+            clicked_btn.config(text=label)
+        if color:
+            clicked_btn.config(fg=color)
 
     def _update_display(self, msg, color="black"):
         self.display["text"] = msg

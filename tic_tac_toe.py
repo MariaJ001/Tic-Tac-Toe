@@ -8,16 +8,19 @@ class Player(NamedTuple):
     label: str
     color: str
 
+
 class Move(NamedTuple):
     row: int
     col: int
     label: str = ""
+
 
 BOARD_SIZE = 3
 DEFAULT_PLAYERS = (
     Player(label="X", color="pink"),
     Player(label="O", color="purple"),
 )
+
 
 class TicTacToeGame:
     def __init__(self, players=DEFAULT_PLAYERS, board_size=BOARD_SIZE):
@@ -90,6 +93,7 @@ class TicTacToeGame:
         self._has_winner = False
         self.winner_combo = []
 
+
 class PlayerColorDialog(tk.Toplevel):
     def __init__(self, parent, player_label):
         super().__init__(parent)
@@ -110,6 +114,7 @@ class PlayerColorDialog(tk.Toplevel):
     def _ok(self):
         self.color = self.color_entry.get()
         self.destroy()
+
 
 class TicTacToeBoard(tk.Tk):
     def __init__(self, game):
@@ -142,13 +147,6 @@ class TicTacToeBoard(tk.Tk):
         # Initialize _players with a new cycle object with the list of players
         self._game._players = cycle(players_with_colors)
 
-    def _initialize_players(self):
-        players_with_colors = [
-            Player(label="X", color=self._player_colors[0]),
-            Player(label="O", color=self._player_colors[1])
-        ]
-        self._game._players = cycle(players_with_colors)
-
     def _create_menu(self):
         menu_bar = tk.Menu(master=self)
         self.config(menu=menu_bar)
@@ -161,10 +159,7 @@ class TicTacToeBoard(tk.Tk):
     def _play_again(self):
         # Ask players if they want to keep their chosen colors
         confirm = simpledialog.askstring("Play Again", "Do you want to keep your chosen colors? (yes/no)")
-        if confirm.lower() == 'yes':
-            # Keep the same colors
-            self._initialize_players()
-        else:
+        if confirm.lower() == 'no':
             # Prompt players to choose colors again
             self._choose_player_colors()
 
@@ -245,15 +240,17 @@ class TicTacToeBoard(tk.Tk):
         self._game.reset_game()
         self._update_display(msg="Ready?")
         for button in self._cells.keys():
-            button.config(highlightbackground="lightpink")
+            button.config(highlightbackground="lightblue")
             button.config(text="")
             button.config(fg="black")
+
 
 def main():
     """Create the game's board and run its main loop."""
     game = TicTacToeGame()
     board = TicTacToeBoard(game)
     board.mainloop()
+
 
 if __name__ == "__main__":
     main()

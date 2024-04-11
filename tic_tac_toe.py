@@ -192,10 +192,10 @@ class TicTacToeBoard(tk.Tk):
                     master=grid_frame,
                     text="",
                     font=font.Font(size=36, weight="bold"),
-                    fg="black",
+                    fg="white",
                     width=3,
                     height=2,
-                    highlightbackground="lightpink",
+                    highlightbackground="lightblue",
                 )
                 self._cells[button] = (row, col)
                 button.bind("<ButtonPress-1>", self.play)

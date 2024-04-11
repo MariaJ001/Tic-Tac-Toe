@@ -6,6 +6,7 @@ This repository contains a simple implementation of the classic Tic-Tac-Toe game
 - Support for two players (X and O).
 - Highlights winning cells and displays game status.
 - Option to play again or exit the game.
+- Option to change players colors.
 ## Usage:
 - Clone the repository to your local machine.
 - Ensure you have Python installed.
